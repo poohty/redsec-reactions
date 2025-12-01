@@ -1,3 +1,4 @@
+
 import os
 import requests
 from datetime import datetime, timedelta
@@ -5,6 +6,7 @@ from flask import Flask, request, render_template_string
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import time
+import re
 import random  # For demo
 
 load_dotenv()
@@ -282,3 +284,4 @@ button { padding: 10px 20px; background: #ff6b35; color: white; border: none; cu
 
 if __name__ == '__main__':
     app.run(debug=True)
+
