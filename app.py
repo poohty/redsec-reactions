@@ -139,9 +139,9 @@ input { width: 200px; padding: 10px; }
 <form method="post">
     Username: <input type="text" name="username" value="{{ username or '' }}" required>
     Platform: <select name="platform">
-        <option value="pc">PC</option>
-        <option value="psn">PSN</option>
-        <option value="xbl">Xbox</option>
+        <option value="pc" {% if platform == 'pc' %}selected{% endif %}>PC</option>
+        <option value="psn" {% if platform == 'psn' %}selected{% endif %}>PlayStation</option>
+        <option value="xbl" {% if platform == 'xbl' %}selected{% endif %}>Xbox</option>
     </select>
     <button type="submit">Search Kills</button>
 </form>
@@ -164,4 +164,5 @@ input { width: 200px; padding: 10px; }
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
