@@ -17,20 +17,32 @@ REDSEC_GAME_ID = 25260  # Placeholder; use actual BF6/RedSec ID from API docs
 
 # Get Twitch OAuth token (cached for 60 days)
 def get_twitch_token():
+    if not TWITCH_CLIENT_ID or not TWITCH_CLIENT_SECRET:
+        print("Missing Twitch keys – check Heroku Config Vars")
+        return "dummy_token"
+    
     cache_file = 'twitch_token.txt'
     if os.path.exists(cache_file):
-        with open(cache_file, 'r') as f:
-            token_data = f.read().strip().split('|')
-            if datetime.now() < datetime.fromisoformat(token_data[1]):
-                return token_data[0]
-    # Refresh
+        try:
+            with open(cache_file, 'r') as f:
+                token_data = f.read().strip().split('|')
+                if len(token_data) == 2 and datetime.now() < datetime.fromisoformat(token_data[1]):
+                    return token_data[0]
+        except:
+            pass
+    
     resp = requests.post('https://id.twitch.tv/oauth2/token', data={
         'client_id': TWITCH_CLIENT_ID,
         'client_secret': TWITCH_CLIENT_SECRET,
         'grant_type': 'client_credentials'
     })
-    token = resp.json()['access_token']
-    expiry = datetime.now() + timedelta(hours=4)  # Approx
+    if resp.status_code != 200:
+        print("Twitch auth failed:", resp.text)
+        return "dummy_token"
+    
+    data = resp.json()
+    token = data.get('access_token', 'dummy_token')
+    expiry = datetime.now() + timedelta(seconds=data.get('expires_in', 3600))
     with open(cache_file, 'w') as f:
         f.write(f"{token}|{expiry.isoformat()}")
     return token
@@ -152,3 +164,4 @@ input { width: 200px; padding: 10px; }
 
 if __name__ == '__main__':
     app.run(debug=True)
+
